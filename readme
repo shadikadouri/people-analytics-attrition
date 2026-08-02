@@ -1,0 +1,29 @@
+Quantitative people analytics: modeling employees attriction
+
+executive summary
+Voluntary employee attrition poses significant financial and operational challenges to organizations through lost productivity, institutional knowledge drain, and elevated recruitment costs. This project develops an end-to-end econometric and statistical pipeline in R to analyze determinants of workplace turnover and predict individual flight risk using data-driven methodologies.
+The objective is to move beyond descriptive statistics by constructing an interpretable predictive model that enables proactive human resource intervention and evidence-based retention strategies.
+
+---
+Methodology and technical structure
+
+Tech stack
+-Programming environment: R (v4.x)
+-Core libraries: `tidyverse` (data transformation and visualization), `janitor` (data cleaning)
+Statistical framework: binary logistic regression via generalized linear models (`glm`)
+
+Feature engineering & data pipeline
+-Data preprocessing: removal of zero-variance attributes, handling of missing values, and standardize column formatting.
+-Feature construction:
+   Income Ratio: created a normalized metric evaluating an employee's monthly income relative to the median salary of their specific job role (Pay Equity Indicator).
+   Overtime Mapping: converted qualitative overtime status into binary indicators to isolate workload pressure.
+-Model formulation: applied a generalized linear model with a binomial family specification to estimate the probability of attrition ($P(Y=1)$) based on demographic, compensation, and work-environment variables.
+-Risk stratification: computed individual probability scores (`Flight_Risk_Score`) and categorized employees into three actionable risk tiers: Low (< 30%), Medium (30% - 60%), and High (> 60%).
+
+---
+Key empirical findings
+
+1. Impact of overtime: statistical estimation indicates a significant positive relationship between systematic overtime and voluntary departure, rendering workload intensity one of the strongest individual predictors of attrition.
+2. Compensation parity: employees with an `Income Ratio` below 1.0 (earning below the role-specific baseline) exhibit a substantially higher log-odds of turnover compared to peers at or above parity.
+3. Career stagnation: extended tenure in a single role without recent promotion acts as a compound risk factor when combined with high workload indicators.
+

@@ -1,0 +1,111 @@
+---
+title: "PA"
+author: "shadi"
+date: "2026-08-01"
+output: html_document
+---
+
+```{r}
+df <- read.csv("Employee.csv")
+str(df)
+```
+```{r}
+#data cleaning
+library(tidyverse)
+sum(is.na(df))
+df <- df %>% 
+  select(-any_of(c("EmployeeCount", "Over18", "StandardHours", "EmployeeNumber")))
+df <- df %>% 
+  mutate(Attrition_num = ifelse(Attrition == "Yes", 1, 0))
+df <- df %>% 
+  mutate(
+    Attrition_num = ifelse(Attrition == "Yes", 1, 0),
+    OverTime_num  = ifelse(OverTime == "Yes", 1, 0)
+  )
+
+df <- df %>% 
+  mutate(AvgYearsPerCompany = TotalWorkingYears / (NumCompaniesWorked + 1)) %>% 
+  group_by(JobRole) %>% 
+  mutate(IncomeRatio = MonthlyIncome / mean(MonthlyIncome)) %>% 
+  ungroup()
+```
+```{r}
+#eda
+library(tidyverse)
+
+#attrition rate
+df %>% 
+  count(Attrition) %>% 
+  mutate(Percentage = round(n / sum(n) * 100, 1))
+
+#attrition x overtime
+df %>% 
+  group_by(OverTime, Attrition) %>% 
+  summarise(Count = n(), .groups = "drop") %>% 
+  group_by(OverTime) %>% 
+  mutate(Percentage = round(Count / sum(Count) * 100, 1))
+
+#graph 1: overtime vs attrition
+ggplot(df, aes(x = OverTime, fill = Attrition)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "overtime on attrtion",
+    x = "overtime",
+    y = "percentage"
+  ) +
+  theme_minimal()
+
+#graph 2: income ratio between who leave and who remain
+ggplot(df, aes(x = Attrition, y = IncomeRatio, fill = Attrition)) +
+  geom_boxplot() +
+  labs(
+    title = "salary/average role vs attrition Ratio",
+    x = "attrition",
+    y = "salary rate"
+  ) +
+  theme_minimal()
+```
+```{r}
+library(tidyverse)
+
+model <- glm(Attrition_num ~ Age + OverTime_num + IncomeRatio + AvgYearsPerCompany + JobSatisfaction + WorkLifeBalance + YearsSinceLastPromotion, 
+  data = df, 
+  family = binomial
+)
+
+summary(model)
+
+# attrition probability
+df <- df %>% 
+  mutate(Risk_Probability = predict(model, type = "response"),
+    Flight_Risk_Score = round(Risk_Probability * 100, 1),
+    Risk_Level = case_when(
+      Flight_Risk_Score >= 60 ~ "High",
+      Flight_Risk_Score >= 30 ~ "Medium",
+      TRUE                    ~ "Low"))
+
+# how many employees in every risk level
+df %>% 
+  count(Risk_Level)
+
+
+```
+```{r}
+library(tidyverse)
+
+# risk levels distribution
+ggplot(df, aes(x = Risk_Level, fill = Risk_Level)) +
+  geom_bar() +
+  scale_fill_manual(values = c("Low" = "green", "Medium" = "orange", "High" = "red")) +
+  labs(
+    title = "risk level distribution",
+    x = "risk type",
+    y = "number of employees"
+  ) +
+  theme_minimal()
+
+# contingency table
+table(Reale = df$Attrition, Predetto = df$Risk_Level)
+```
+
