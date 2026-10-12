@@ -1,6 +1,6 @@
 ---
-title: "PA"
-author: "shadi"
+title: "Employee Attrition: Flight-Risk Model"
+author: "Shadi Kadouri"
 date: "2026-08-01"
 output: html_document
 ---
@@ -50,9 +50,9 @@ ggplot(df, aes(x = OverTime, fill = Attrition)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   labs(
-    title = "overtime on attrtion",
-    x = "overtime",
-    y = "percentage"
+    title = "Overtime vs attrition",
+    x = "Overtime",
+    y = "Share of employees"
   ) +
   theme_minimal()
 
@@ -60,9 +60,9 @@ ggplot(df, aes(x = OverTime, fill = Attrition)) +
 ggplot(df, aes(x = Attrition, y = IncomeRatio, fill = Attrition)) +
   geom_boxplot() +
   labs(
-    title = "salary/average role vs attrition Ratio",
-    x = "attrition",
-    y = "salary rate"
+    title = "Income ratio (vs role average) by attrition",
+    x = "Attrition",
+    y = "Income ratio"
   ) +
   theme_minimal()
 ```
@@ -99,13 +99,13 @@ ggplot(df, aes(x = Risk_Level, fill = Risk_Level)) +
   geom_bar() +
   scale_fill_manual(values = c("Low" = "green", "Medium" = "orange", "High" = "red")) +
   labs(
-    title = "risk level distribution",
-    x = "risk type",
-    y = "number of employees"
+    title = "Risk level distribution",
+    x = "Risk level",
+    y = "Number of employees"
   ) +
   theme_minimal()
 
 # contingency table
-table(Reale = df$Attrition, Predetto = df$Risk_Level)
+table(Actual = df$Attrition, Predicted = df$Risk_Level)
 ```
 
